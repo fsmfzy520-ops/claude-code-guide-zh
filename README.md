@@ -1,6 +1,6 @@
 # Claude Code 中文入门指南
 
-整理 Claude Code 从安装到日常使用的要点，适合第一次用的人。命令以 2026 年 10 月为准，Claude Code 更新很快，如果和你看到的不一样，以[官方文桡](https://code.claude.com/docs)为准。
+整理 Claude Code 从安装到日常使用的要点，适合第一次用的人。命令以 2026 年 10 月为准，Claude Code 更新很快，如果和你看到的不一样，以[官方文档](https://code.claude.com/docs)为准。
 
 ## 目录
 
@@ -10,6 +10,7 @@
 - [常用命令](#常用命令)
 - [CLAUDE.md：让它记住你的项目](#claudemd让它记住你的项目)
 - [订阅还是 API](#订阅还是-api)
+- [不用 Anthropic 账号：接国产模型](#不用-anthropic-账号接国产模型)
 - [常见问题](#常见问题)
 
 ## 它是什么
@@ -109,6 +110,54 @@ CLAUDE.md 是放在项目根目录的一个说明文件，Claude Code 每次启�
 要注意：订阅额度是 **claude.ai 网页版、桌面版和 Claude Code 共用的**。
 
 Pro 和 Max 怎么选：偶尔用 Pro 够了；每天用好几个小时、经常做大改动，再看 Max。建议先用一个月 Pro，看看自己多久撞一次上限。
+
+## 不用 Anthropic 账号：接国产模型
+
+Claude Code 不一定非要配 Claude 模型。它支持通过环境变量，接任何兼容 Anthropic 接口的服务，国内几家大模型厂商都提供了这种接口。
+
+**适合谁：** 看中 Claude Code 这套工作流（自动读代码、改文件、跑命令），但没有 Anthropic 账号，或者不想折腾订阅的人。
+
+**代价：** 效果跟 Claude 本身有差距，简单任务感觉不出来，复杂的重构、大项目会明显一些。
+
+### 配置方法
+
+核心就两个环境变量：
+
+```bash
+export ANTHROPIC_BASE_URL=接口地址
+export ANTHROPIC_AUTH_TOKEN=你在对应平台申请的 API Key
+```
+
+几家的接口地址：
+
+| 厂商 | 接口地址 | 官方说明 |
+|---|---|---|
+| DeepSeek | `https://api.deepseek.com/anthropic` | [DeepSeek 文档](https://api-docs.deepseek.com/zh-cn/quick_start/agent_integrations/claude_code) |
+| Kimi（月之暗面） | `https://api.moonshot.cn/anthropic` | [Kimi 文档](https://platform.kimi.com/docs/guide/claude-code-kimi) |
+| 智谱 GLM | `https://open.bigmodel.cn/api/anthropic` | 智谱开放平台文档 |
+
+用哪个模型，一般还要设置 `ANTHROPIC_MODEL` 等几个变量。各家模型更新很快，具体填什么名字，以上面的官方文档为准。
+
+### 想长期用，写进配置文件
+
+每次开终端都要 export 很麻烦，可以写到 `~/.claude/settings.json` 里：
+
+```json
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "接口地址",
+    "ANTHROPIC_AUTH_TOKEN": "你的 API Key"
+  }
+}
+```
+
+改完以后重启 Claude Code 才会生效。
+
+### 几个容易踩的坑
+
+- **不要同时设置 `ANTHROPIC_API_KEY`**。用第三方接口的时候，Key 填在 `ANTHROPIC_AUTH_TOKEN` 里，两个都有的话可能会冲突。
+- **配置文件优先**。`settings.json` 里的设置，会覆盖终端里 export 的同名变量。改了没反应，先检查一下配置文件。
+- **想换回 Claude 订阅**。把这几个变量删掉，重启后输入 `/login`，用 Claude 账号重新登录就行。
 
 ## 常见问题
 
